@@ -1,0 +1,7 @@
+build/
+.tools/
+*.rbxl.lock
+*.rbxlx.lock
+coverage.out
+.DS_Store
+__pycache__/

@@ -1,0 +1,15 @@
+{
+  "name": "Krwawy Piatek",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": { "Friday": { "$path": "src/shared" } },
+    "ServerScriptService": { "FridayServer": { "$path": "src/server" } },
+    "StarterPlayer": {
+      "$properties": { "CameraMaxZoomDistance": 24, "CameraMinZoomDistance": 5, "CharacterWalkSpeed": 13 },
+      "StarterPlayerScripts": { "FridayClient": { "$path": "src/client" } }
+    },
+    "Lighting": { "$properties": { "ClockTime": 8.2, "Brightness": 2, "Ambient": [0.35, 0.38, 0.43], "OutdoorAmbient": [0.45, 0.48, 0.52], "GlobalShadows": true } },
+    "Workspace": { "$properties": { "Gravity": 196.2 } },
+    "SoundService": { "$properties": { "RespectFilteringEnabled": true } }
+  }
+}
