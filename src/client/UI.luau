@@ -1,10 +1,11 @@
 local TweenService = game:GetService("TweenService")
 local UI = {}
 UI.colors = {
-    ink = Color3.fromRGB(18, 29, 33), panel = Color3.fromRGB(27, 42, 46),
-    paper = Color3.fromRGB(240, 228, 201), muted = Color3.fromRGB(161, 181, 180),
-    amber = Color3.fromRGB(224, 172, 103), teal = Color3.fromRGB(91, 156, 153),
-    line = Color3.fromRGB(66, 86, 88), error = Color3.fromRGB(231, 153, 135),
+    ink = Color3.fromRGB(12, 14, 17), panel = Color3.fromRGB(24, 27, 32),
+    paper = Color3.fromRGB(235, 234, 228), muted = Color3.fromRGB(151, 155, 163),
+    amber = Color3.fromRGB(219, 92, 75), teal = Color3.fromRGB(235, 234, 228),
+    line = Color3.fromRGB(58, 62, 69), error = Color3.fromRGB(235, 130, 113),
+    selected = Color3.fromRGB(55, 40, 40), positive = Color3.fromRGB(143, 177, 153),
 }
 UI.reducedMotion = false
 
@@ -16,11 +17,11 @@ function UI.make(class, props, parent)
 end
 
 function UI.corner(object, radius)
-    UI.make("UICorner", { CornerRadius = UDim.new(0, radius or 12) }, object)
+    UI.make("UICorner", { CornerRadius = UDim.new(0, radius or 3) }, object)
 end
 
 function UI.stroke(object, color)
-    UI.make("UIStroke", { Color = color or UI.colors.line, Thickness = 1, Transparency = 0.25 }, object)
+    return UI.make("UIStroke", { Color = color or UI.colors.line, Thickness = 1, Transparency = 0.35, ApplyStrokeMode = Enum.ApplyStrokeMode.Border }, object)
 end
 
 function UI.frame(parent, props)
@@ -49,15 +50,44 @@ end
 function UI.button(parent, value, callback, props)
     local base = { Text = value, TextColor3 = UI.colors.paper, TextSize = 15,
         Font = Enum.Font.GothamMedium, BackgroundColor3 = UI.colors.panel,
-        AutoButtonColor = false, BorderSizePixel = 0, TextWrapped = true,
-        Size = UDim2.new(1, 0, 0, 48) }
+        AutoButtonColor = false, BorderSizePixel = 0, TextWrapped = true, Selectable = true,
+        Size = UDim2.new(1, 0, 0, 50) }
     for k, v in pairs(props or {}) do base[k] = v end
     local button = UI.make("TextButton", base, parent)
-    UI.corner(button, 9)
-    UI.stroke(button)
-    local normal = button.BackgroundColor3
-    button.MouseEnter:Connect(function() UI.tween(button, { BackgroundColor3 = UI.colors.line }, 0.15) end)
-    button.MouseLeave:Connect(function() UI.tween(button, { BackgroundColor3 = normal }, 0.15) end)
+    UI.corner(button, 3)
+    local border = UI.stroke(button)
+    UI.make("UIPadding", { PaddingLeft = UDim.new(0, 18), PaddingRight = UDim.new(0, 18) }, button)
+    local function focus()
+        if button:GetAttribute("Disabled") then return end
+        UI.tween(border, { Color = UI.colors.paper, Transparency = 0.05 }, 0.15)
+    end
+    local function blur()
+        UI.tween(border, { Color = UI.colors.line, Transparency = 0.35 }, 0.15)
+    end
+    button.MouseEnter:Connect(focus)
+    button.MouseLeave:Connect(blur)
+    button.SelectionGained:Connect(focus)
+    button.SelectionLost:Connect(blur)
+    button.Activated:Connect(function() if not button:GetAttribute("Disabled") then callback() end end)
+    return button
+end
+
+function UI.rule(parent, position, size, color, zindex)
+    return UI.frame(parent, { Position = position, Size = size, BackgroundColor3 = color or UI.colors.line, ZIndex = zindex or parent.ZIndex })
+end
+
+function UI.link(parent, value, callback, props)
+    local base = { BackgroundTransparency = 1, Text = value, TextColor3 = UI.colors.muted,
+        TextSize = 15, Font = Enum.Font.GothamMedium, TextXAlignment = Enum.TextXAlignment.Left,
+        AutoButtonColor = false, BorderSizePixel = 0, Size = UDim2.new(1, 0, 0, 36), Selectable = true }
+    for key, val in pairs(props or {}) do base[key] = val end
+    local button = UI.make("TextButton", base, parent)
+    local function focus() UI.tween(button, { TextColor3 = UI.colors.paper }, 0.15) end
+    local function blur() UI.tween(button, { TextColor3 = base.TextColor3 }, 0.15) end
+    button.MouseEnter:Connect(focus)
+    button.MouseLeave:Connect(blur)
+    button.SelectionGained:Connect(focus)
+    button.SelectionLost:Connect(blur)
     button.Activated:Connect(callback)
     return button
 end

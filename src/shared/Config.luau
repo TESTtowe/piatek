@@ -1,7 +1,13 @@
 return table.freeze({
     Title = "KRWAWY PIĄTEK",
     Subtitle = "Zanim zadzwoni dzwonek",
-    Version = "0.1.0",
+    Version = "0.2.0",
+    ProjectCredit = "TESTtowe",
+    Credits = {
+        { role = "KONCEPCJA I KIERUNEK", name = "TESTtowe" },
+        { role = "PROGRAMOWANIE I OPRACOWANIE UI", name = "Codex" },
+        { role = "MATERIAŁY REFERENCYJNE", name = "Komunikaty instytucji i relacje prasowe" },
+    },
     -- Włącz dopiero po opublikowaniu własnego miejsca i konfiguracji API w Studio.
     PersistenceEnabled = false,
     DataStoreName = "FridayProgress_v1",

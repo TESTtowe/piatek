@@ -15,6 +15,14 @@ Gracz poznaje fikcyjną klasę w czasie zwykłego poranka. Zmiana dnia pojawia s
 
 Minigry nie są mechanizmem zabezpieczającym przed graczem czytającym moduły w ReplicatedStorage. Ich definicje są jawne. Walidacja zapobiega nieprawidłowym przejściom i żądaniom, ale nie jest ogólnym systemem antycheat. Projekt nie ma konkurencyjnego rankingu ani nagrody ekonomicznej za rozwiązania.
 
-Paleta UI: ciemny atrament, zgaszony turkus, papier i bursztyn. Świat: jesienne kolory, prosta geometria i ciepłe oświetlenie wnętrz. Wszystkie widoczne elementy działają bez cudzych assetów. Docelowe modele, animacje i dźwięki można dodać po ustaleniu stylu i licencji.
+Wersja 0.2.0 ma wspólny kierunek wizualny: grafitowe tło, papierowy kolor tekstu, typografię Oswald i czerwony akcent używany do tytułu, oznaczeń i wyborów. Menu pozostawia miejsce na kadr korytarza. Na telefonie nawigacja zajmuje dwie kolumny, a treść przewija się zamiast zmniejszać tekst do nieczytelnego rozmiaru.
+
+Pierwsze wejście rozpoczyna osobne ostrzeżenie. Gracz potwierdza jego przeczytanie; wejście wymaga także stanu serwera i kompletnego świata. Potwierdzenie obowiązuje do końca sesji, również po odrodzeniu. Sekcja autorów korzysta z `Config.Credits`, bez dopisywania nieistniejącego zespołu.
+
+Dialogi wykorzystują panel w dolnej części ekranu, portret z rzeczywistego modelu postaci i osobny kadr rozmówcy. Kamera wraca do sterowania gracza po zamknięciu rozmowy. Opcja ograniczenia ruchu wyłącza kołysanie i proceduralny ruch postaci. Oświetlenie korzysta z przeszklonego dachu, lamp, korekcji kolorów i subtelnych efektów postprocessingu.
+
+Każda minigra ma własny sposób pracy: chronologia przenosi wybrane karty na początek i pokazuje pozycje; weryfikacja prezentuje jeden dokument i zachowuje odpowiedzi podczas cofania; lista pokazuje imiona przed wyborem na siatce. Udane rozwiązanie blokuje stare kontrolki i pozostawia powrót do opowieści. Podpowiedź interakcji zwalnia wirtualnie przytrzymany przycisk także wtedy, gdy obiekt znika.
+
+Modele i otoczenie powstają z geometrii Roblox. Portrety nie są rysunkami zastępczymi. Kod nie zawiera nagrań, muzyki ani profesjonalnych animacji szkieletowych; dodanie ich wymaga własnych lub licencjonowanych materiałów. Podglądy w dokumentacji są projekcją układu GUI, nie renderem silnika.
 
 Wersja nie rekonstruuje prawdziwego ataku od początku do końca: dostępne źródła nie ustalają całej historii ani związku wszystkich zdarzeń. Rozszerzenie o konkretny rzeczywisty przypadek wymaga osobnej osi czasu ze źródłem każdej sceny oraz oznaczenia dialogów i zdarzeń rekonstruowanych. Nie należy zmieniać niepotwierdzonego internetowego opisu w fakt tylko po to, żeby wypełnić lukę w fabule.

@@ -26,12 +26,13 @@ def main():
     # Studio globals require Studio's type definitions; portable domain modules are fully analyzed here.
     run("luau-analyze", *sorted((ROOT / "src/shared").glob("*.luau")))
     run("luau", "tests/campaign.spec.luau")
+    subprocess.run([sys.executable, "scripts/check_frontend.py"], cwd=ROOT, check=True)
     (ROOT / "build").mkdir(exist_ok=True)
     run("rojo", "build", "default.project.json", "-o", "build/KrwawyPiatek.rbxlx")
     run("rojo", "build", "default.project.json", "-o", "build/KrwawyPiatek.rbxl")
     root = ET.parse(ROOT / "build/KrwawyPiatek.rbxlx").getroot()
     found = {kind: len(root.findall(f".//Item[@class='{kind}']")) for kind in ("Script", "LocalScript", "ModuleScript")}
-    if found != {"Script": 1, "LocalScript": 1, "ModuleScript": 9}:
+    if found != {"Script": 1, "LocalScript": 1, "ModuleScript": 13}:
         raise SystemExit(f"Unexpected script mapping: {found}")
     print(f"Verified place script mapping: {found}")
     with zipfile.ZipFile(ROOT / "build/KrwawyPiatek-source.zip", "w", zipfile.ZIP_DEFLATED) as bundle:
