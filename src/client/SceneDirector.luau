@@ -19,8 +19,8 @@ function SceneDirector.new(camera, lighting, worldData)
             local desired
             if menuOpen then
                 local drift = reducedMotion and 0 or math.sin(self.elapsed * 0.075) * 0.45
-                desired = CFrame.lookAt(Vector3.new(10 + drift, 5.7, 14), Vector3.new(-3, 4.8, -43))
-                camera.FieldOfView = 56
+                desired = CFrame.lookAt(Vector3.new(-4 + drift, 5.6, -331), Vector3.new(4.5, 5.2, -383))
+                camera.FieldOfView = 54
                 focus.FocusDistance = 32
             else
                 local world = workspace:FindFirstChild("FridayWorld")

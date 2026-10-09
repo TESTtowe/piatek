@@ -14,6 +14,7 @@ def main():
     source += "\n" + (ROOT / "src/client/UI.luau").read_text().replace("return UI\n", "")
     source += "\n" + (ROOT / "src/client/FrontEnd.luau").read_text().replace("return FrontEnd\n", "")
     source += "\n" + (ROOT / "src/client/Interaction.luau").read_text().replace("return Interaction\n", "")
+    source += "\n" + (ROOT / "src/client/ArtBackground.luau").read_text().replace("return ArtBackground\n", "")
     source += "\n" + (ROOT / "tests/frontend.driver.luau").read_text()
     generated = output / "frontend-check.luau"
     generated.write_text(source)

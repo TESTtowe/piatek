@@ -7,9 +7,18 @@ Poniższe testy nie zostały wykonane w chmurze. Wymagają Roblox Studio.
 1. Otwórz wygenerowany `.rbxl`; uruchom **Play**.
 2. Sprawdź Output po stronie serwera i klienta. Oczekiwany wynik: brak błędów w skryptach Friday.
 3. Przed potwierdzeniem ostrzeżenia spróbuj przejść dalej. Oczekiwane: menu i ruch pozostają zablokowane. Odznaczenie pola ponownie blokuje przycisk wejścia; ładowanie świata również go blokuje.
-4. Potwierdź ostrzeżenie i otwórz menu. Sprawdź kamerę korytarza, czytelność tytułu, przewijanie małego ekranu, autorów i spis sześciu rozdziałów.
+4. Potwierdź ostrzeżenie i otwórz menu. Sprawdź tło korytarza, czytelność tytułu Bodoni, przewijanie małego ekranu, autorów i spis sześciu rozdziałów.
 5. Otwórz archiwum przed startem. Sprawdź komplet wpisów oraz oznaczenia źródeł i fikcyjnej fabuły.
 6. Rozpocznij opowieść. Oczekiwane: sterowanie zostaje odblokowane, pojawia się znacznik Leny i podpowiedź E.
+
+## Grafika menu i 2K
+
+1. W Device Emulator ustaw 2560×1440, potem 1920×1080, 1280×720, telefon pionowo i poziomo. Sprawdź tytuł, ostrzeżenie, przycisk startu i wszystkie elementy nawigacji.
+2. Sprawdź, czy obraz `Photograph` powstaje z czterech fragmentów i nie ma przerw na ich łączeniach. `Friday background: using 3D scene` w Output oznacza uruchomienie wariantu 3D; zapisz dokładny komunikat API.
+3. Otwórz i zamknij menu kilka razy. Liczba tworzonych `EditableImage` nie powinna rosnąć; po rozpoczęciu gry tło powinno zniknąć. Przy ponownym otwarciu wraca ten sam obraz.
+4. Sprawdź przejście z ostrzeżenia do menu. Wielokrotne kliknięcie potwierdzenia nie może uruchomić kilku przejść. Ograniczenie ruchu pomija animację wygaszenia.
+5. Na małym ekranie przewiń treść ostrzeżenia. Checkbox i przycisk pozostają w stałym miejscu; nie powinny zostać zasłonięte przez treść.
+6. Sprawdź opublikowane doświadczenie z właściwym ustawieniem **Enable Mesh / Image APIs** oraz z niedostępnym API. W drugim wariancie musi działać kadr 3D i wejście do gry. Osobno sprawdź własny opublikowany obraz przez `Config.MenuImage`.
 
 ## Kampania
 
@@ -33,7 +42,7 @@ W **Test → Server & Clients** uruchom serwer z dwoma klientami. Przejdź róż
 
 ## Ekrany i wejście
 
-W Device Emulator sprawdź telefon w pionie 360×640, telefon poziomo i komputer 1920×1080. Dialogi, minigry oraz archiwum muszą dać się przewijać. Sterowanie ekranowe nie powinno zasłaniać aktywnej interakcji. Sprawdź własną podpowiedź na dotyk: przytrzymanie musi zostać zwolnione, gdy podpowiedź znika lub otwiera się rozmowa. Systemowe przyciski Roblox i obszar wycięcia ekranu nie powinny zasłaniać treści. Sprawdź fokus przycisków z kontrolera oraz systemową interakcję ButtonX i zamykanie panelu ButtonB.
+W Device Emulator sprawdź telefon w pionie 360×640, telefon poziomo, komputer 1920×1080 oraz 2560×1440. Dialogi, minigry oraz archiwum muszą dać się przewijać. Sterowanie ekranowe nie powinno zasłaniać aktywnej interakcji. Sprawdź własną podpowiedź na dotyk: przytrzymanie musi zostać zwolnione, gdy podpowiedź znika lub otwiera się rozmowa. Systemowe przyciski Roblox i obszar wycięcia ekranu nie powinny zasłaniać treści. Sprawdź fokus przycisków z kontrolera oraz systemową interakcję ButtonX i zamykanie panelu ButtonB.
 
 Włącz ograniczenie ruchu. Oczekiwane: kamera menu przestaje kołysać się, zmiany UI i czasu dnia są natychmiastowe. Ukrycie znaczników nie powinno usuwać opisu bieżącego zadania.
 

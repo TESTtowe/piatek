@@ -1,0 +1,45 @@
+{
+  "source": "menu-corridor.png",
+  "sha256": "a67f2cfed3e7bd34f2306e6b81885df573b34bd1b42fd809ef372f44948ce47c",
+  "width": 1672,
+  "height": 941,
+  "decodedBytes": 6293408,
+  "tiles": [
+    {
+      "x": 0,
+      "y": 0,
+      "width": 836,
+      "height": 471,
+      "rgbaSha256": "2e76c86bf88e406f8d27951341c4d18dcb7be36bc92c81099c863d105817a9d1",
+      "compressedSha256": "39755e687007f254d76205a6039a9eda690578fdf9f1df0436d8014c0329bee8",
+      "compressedBytes": 594125
+    },
+    {
+      "x": 836,
+      "y": 0,
+      "width": 836,
+      "height": 471,
+      "rgbaSha256": "6eeef3bafb66f620d70337a35bc8fb04d134875c688ecfd3148af16c48a46604",
+      "compressedSha256": "39fd375559481e842b4fbaba9d3afb3711dd95d5980a191e29742a8e02363b9b",
+      "compressedBytes": 928535
+    },
+    {
+      "x": 0,
+      "y": 471,
+      "width": 836,
+      "height": 470,
+      "rgbaSha256": "accebc6e3418cb12dbf27254ee1a80920e5f9d3d52256d547b3a7246fb177395",
+      "compressedSha256": "16c8736a0d70474ea16c55128e32cf9259d2819d46c8bd26f78eb0aa616d80c8",
+      "compressedBytes": 635898
+    },
+    {
+      "x": 836,
+      "y": 471,
+      "width": 836,
+      "height": 470,
+      "rgbaSha256": "1553d080345f10ea2eb88d1daea844075fd240497f491abf66fc084bafed0065",
+      "compressedSha256": "a84c09bac8e48a2e74b9b31192f228a4b67f03e1273e58c0f14341c41a35e502",
+      "compressedBytes": 951987
+    }
+  ]
+}

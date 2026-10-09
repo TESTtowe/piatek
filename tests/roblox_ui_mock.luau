@@ -30,14 +30,34 @@ local promptService = {
     PromptButtonHoldBegan = signal(), PromptButtonHoldEnded = signal(),
 }
 local deferred = {}
-local task = { delay = function(_, callback) table.insert(deferred, callback) end }
+local task = { delay = function(_, callback) table.insert(deferred, callback) end, spawn = function(callback) callback() end }
 local function drain()
     local batch = deferred
     deferred = {}
     for _, callback in ipairs(batch) do callback() end
 end
+local assetMock = { attempts = 0, objects = {}, failAfter = nil }
+local imageFactory
+local Content = { fromObject = function(object) return { kind = "content", object = object } end }
+local warn = function() end
 local game = { GetService = function(_, name)
     if name == "ProximityPromptService" then return promptService end
+    if name == "AssetService" then return { CreateEditableImage = function(_, options)
+        assetMock.attempts += 1
+        if assetMock.failAfter and assetMock.attempts > assetMock.failAfter then return nil end
+        local object = imageFactory(options.Size)
+        table.insert(assetMock.objects, object)
+        return object
+    end } end
+    if name == "EncodingService" then return {
+        Base64Decode = function(_, data) return data end,
+        GetDecompressedBufferSize = function() return 4 end,
+        DecompressBuffer = function() return buffer.fromstring("RGBA") end,
+    } end
+    if name == "RunService" then return { Heartbeat = { Wait = function() end } } end
+    if name == "ContentProvider" then return { PreloadAsync = function(_, _, callback)
+        callback("test-image", assetMock.publishedStatus or Enum.AssetFetchStatus.Success)
+    end } end
     return { Create = function(_, object, _, props)
         return { Play = function() for key, value in pairs(props) do object[key] = value end end }
     end }
@@ -60,11 +80,16 @@ function Node:FindFirstChild(name, recursive)
     end
 end
 function Node:Destroy()
+    self:SetAttribute("Destroyed", true)
     if self.Parent then
         local index = table.find(self.Parent.children, self)
         if index then table.remove(self.Parent.children, index) end
     end
     self.properties.Parent = nil
+end
+function Node:WritePixelsBuffer(_, size, pixels)
+    assert(buffer.len(pixels) == size.X * size.Y * 4)
+    self:SetAttribute("Written", true)
 end
 function Instance.new(class)
     local node = { properties = { ClassName = class, Name = class, ZIndex = 1, Visible = true }, children = {}, attributes = {}, signals = {} }
@@ -82,6 +107,11 @@ function Instance.new(class)
             if key == "Parent" and value then table.insert(value.children, self) end
         end,
     })
+end
+imageFactory = function(size)
+    local object = Instance.new("EditableImage")
+    object.Size = size
+    return object
 end
 
 local function escape(value)

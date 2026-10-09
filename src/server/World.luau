@@ -3,6 +3,7 @@ local Workspace = game:GetService("Workspace")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Data = require(ReplicatedStorage:WaitForChild("Friday"):WaitForChild("WorldData"))
 
+local MenuSet = require(script.Parent:WaitForChild("MenuSet"))
 local World = {}
 local palette = {
     plaster = Color3.fromRGB(204, 207, 209), trim = Color3.fromRGB(64, 78, 89),
@@ -356,17 +357,17 @@ function World.build(onInteract)
         if effect:GetAttribute("FridayEffect") then effect:Destroy() end
     end
     local atmosphere = Instance.new("Atmosphere")
-    atmosphere.Density = 0.2
+    atmosphere.Density = 0.16
     atmosphere.Offset = 0.1
-    atmosphere.Color = Color3.fromRGB(208, 222, 230)
+    atmosphere.Color = Color3.fromRGB(225, 217, 193)
     atmosphere.Decay = Color3.fromRGB(117, 142, 166)
     atmosphere:SetAttribute("FridayEffect", true)
     atmosphere.Parent = Lighting
     local grade = Instance.new("ColorCorrectionEffect")
     grade.Name = "FridayGrade"
-    grade.Contrast = 0.18
-    grade.Saturation = -0.22
-    grade.TintColor = Color3.fromRGB(238, 245, 255)
+    grade.Contrast = 0.12
+    grade.Saturation = -0.08
+    grade.TintColor = Color3.fromRGB(255, 248, 227)
     grade:SetAttribute("FridayEffect", true)
     grade.Parent = Lighting
     local bloom = Instance.new("BloomEffect")
@@ -377,6 +378,7 @@ function World.build(onInteract)
     rays.Name, rays.Intensity, rays.Spread = "FridaySunlight", 0.025, 0.9
     rays:SetAttribute("FridayEffect", true)
     rays.Parent = Lighting
+    MenuSet.build(root)
     root:SetAttribute("Ready", true)
     return handles
 end

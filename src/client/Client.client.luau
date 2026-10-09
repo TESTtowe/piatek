@@ -14,6 +14,7 @@ local FactBook = require(Shared:WaitForChild("FactBook"))
 local WorldData = require(Shared:WaitForChild("WorldData"))
 local UI = require(script.Parent:WaitForChild("UI"))
 local FrontEnd = require(script.Parent:WaitForChild("FrontEnd"))
+local ArtBackground = require(script.Parent:WaitForChild("ArtBackground"))
 local SceneDirector = require(script.Parent:WaitForChild("SceneDirector"))
 local Interaction = require(script.Parent:WaitForChild("Interaction"))
 local Presentation = require(Shared:WaitForChild("Presentation"))
@@ -27,7 +28,7 @@ local state, activeToken, mode, puzzleAnswer, puzzleDefinition
 local pendingChapter, pendingEnd, puzzleFeedback, submitButton
 local menuOpen, panelOpen, hasStarted = true, false, false
 local directions, resetDeadline = true, 0
-local marker, highlight, front
+local marker, highlight, front, art
 local modalSpeaker, dialogueTarget
 local layoutPanel
 local showChapter, showEnding, renderState, closePanel
@@ -37,7 +38,8 @@ local function viewport()
     local size = gui.AbsoluteSize
     return size.X > 0 and size.Y > 0 and size or camera.ViewportSize
 end
-Interaction.new(gui, UI)
+local interactionHint = Interaction.new(gui, UI)
+local interactionScale = UI.make("UIScale", { Scale = 1 }, interactionHint)
 pcall(function() StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.Backpack, false) end)
 
 local function send(action, payload) command:FireServer(action, payload) end
@@ -71,6 +73,7 @@ local function freeze()
 end
 
 local hud = UI.frame(gui, { BackgroundTransparency = 1, Size = UDim2.fromScale(1, 1), Visible = false })
+local hudScale = UI.make("UIScale", { Scale = 1 }, hud)
 local top = UI.frame(hud, { Size = UDim2.new(1, 0, 0, 72), BackgroundTransparency = 0.12, BackgroundColor3 = C.ink })
 UI.make("UIGradient", { Rotation = 90, Transparency = NumberSequence.new(0.15, 1) }, top)
 UI.text(top, "PIĄTEK", { Position = UDim2.fromOffset(22, 13), Size = UDim2.fromOffset(155, 22), TextSize = 13, Font = Enum.Font.GothamBold, TextColor3 = C.amber })
@@ -82,7 +85,7 @@ local journalButton = UI.button(top, "Zeszyt  [J]", function()
     renderState()
 end, { Position = UDim2.new(1, -154, 0, 17), Size = UDim2.fromOffset(132, 38) })
 local questPanel = UI.frame(hud, { Position = UDim2.fromOffset(22, 94), Size = UDim2.fromOffset(328, 123), BackgroundTransparency = 0.18, BackgroundColor3 = C.ink })
-UI.corner(questPanel, 3)
+UI.corner(questPanel, 10)
 UI.rule(questPanel, UDim2.fromOffset(0, 0), UDim2.new(0, 2, 1, 0), C.amber)
 UI.text(questPanel, "DO ZROBIENIA", { Position = UDim2.fromOffset(16, 14), Size = UDim2.new(1, -32, 0, 20), TextSize = 11, TextColor3 = C.amber, Font = Enum.Font.GothamBold })
 local questText = UI.text(questPanel, "", { Position = UDim2.fromOffset(16, 40), Size = UDim2.new(1, -32, 0, 50), TextSize = 17, Font = Enum.Font.GothamMedium })
@@ -92,7 +95,7 @@ local hint = UI.text(hud, "E · interakcja    J · zeszyt    M · menu", { Posit
 local distanceText = UI.text(questPanel, "", { Position = UDim2.new(1, -66, 0, 13), Size = UDim2.fromOffset(50, 18), TextSize = 11, TextXAlignment = Enum.TextXAlignment.Right, TextColor3 = C.muted })
 
 local map = UI.frame(hud, { Position = UDim2.new(1, -190, 1, -210), Size = UDim2.fromOffset(168, 166), BackgroundTransparency = 0.1 })
-UI.corner(map, 3)
+UI.corner(map, 10)
 UI.stroke(map)
 UI.text(map, "PLAN SZKOŁY", { Position = UDim2.fromOffset(12, 10), TextSize = 10, TextColor3 = C.amber })
 local mapArea = UI.frame(map, { Position = UDim2.fromOffset(12, 34), Size = UDim2.fromOffset(144, 116), BackgroundColor3 = C.ink, ClipsDescendants = true })
@@ -106,7 +109,8 @@ local mapPlayer = UI.frame(mapArea, { Size = UDim2.fromOffset(6, 6), BackgroundC
 UI.corner(mapPlayer, 9)
 
 local toast = UI.frame(gui, { AnchorPoint = Vector2.new(0.5, 1), Position = UDim2.new(0.5, 0, 1, -52), Size = UDim2.new(0.7, 0, 0, 76), BackgroundColor3 = C.ink, Visible = false, ZIndex = 30 })
-UI.corner(toast, 3)
+UI.corner(toast, 10)
+local toastScale = UI.make("UIScale", { Scale = 1 }, toast)
 UI.stroke(toast, C.teal)
 local toastText = UI.text(toast, "", { Position = UDim2.fromOffset(16, 13), Size = UDim2.new(1, -32, 1, -26), TextSize = 15, ZIndex = 31, TextYAlignment = Enum.TextYAlignment.Center })
 local toastGeneration = 0
@@ -153,10 +157,14 @@ front = FrontEnd.new(gui, UI, Config, Presentation, {
     end,
 })
 local menu, startButton, resetButton = front.menu, front.start, front.reset
+art = ArtBackground.new(front.backdrop, UI, Config, function()
+    front:setReady(nil, nil, true)
+end)
 
 local overlay = UI.frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = Color3.new(0, 0, 0), BackgroundTransparency = 0.4, Visible = false, ZIndex = 40, Active = true })
 local panel = UI.frame(overlay, { AnchorPoint = Vector2.new(0.5, 0.5), Position = UDim2.fromScale(0.5, 0.5), Size = UDim2.fromOffset(680, 590), BackgroundColor3 = C.ink, ZIndex = 41 })
-UI.corner(panel, 4)
+UI.corner(panel, 14)
+local panelScale = UI.make("UIScale", { Scale = 1 }, panel)
 UI.rule(panel, UDim2.fromOffset(0, 0), UDim2.new(1, 0, 0, 2), C.amber, 42)
 UI.stroke(panel)
 local panelEyebrow = UI.text(panel, "", { Position = UDim2.fromOffset(24, 20), Size = UDim2.new(1, -100, 0, 19), TextColor3 = C.amber, TextSize = 11, Font = Enum.Font.GothamBold, ZIndex = 42 })
@@ -164,7 +172,7 @@ local panelTitle = UI.text(panel, "", { Position = UDim2.fromOffset(24, 48), Siz
 local speakerPortrait = UI.make("ViewportFrame", { Name = "SpeakerPortrait", Position = UDim2.fromOffset(24, 46), Size = UDim2.fromOffset(52, 52),
     BackgroundColor3 = C.panel, BorderSizePixel = 0, Ambient = Color3.fromRGB(170, 174, 182), LightColor = C.paper,
     LightDirection = Vector3.new(-1, -0.5, -1), Visible = false, ZIndex = 42 }, panel)
-UI.corner(speakerPortrait, 3)
+UI.corner(speakerPortrait, 8)
 local function portrait(target)
     for _, child in ipairs(speakerPortrait:GetChildren()) do if not child:IsA("UICorner") then child:Destroy() end end
     local root = workspace:FindFirstChild("FridayWorld")
@@ -218,17 +226,19 @@ end
 layoutPanel = function()
     local size = viewport()
     local L = Presentation.layout(size.X, size.Y)
+    panelScale.Scale = L.gameScale
     local conversation = mode == "dialogue" or mode == "reply"
     overlay.BackgroundTransparency = conversation and 0.72 or 0.32
     panel.AnchorPoint = Vector2.new(0.5, conversation and 1 or 0.5)
-    panel.Position = conversation and UDim2.new(0.5, 0, 1, -18) or UDim2.fromScale(0.5, 0.5)
+    panel.Position = conversation and UDim2.new(0.5, 0, 1, -18 * L.gameScale) or UDim2.fromScale(0.5, 0.5)
     panel.Size = UDim2.fromOffset(L.panelWidth, conversation and math.min(L.panelHeight, size.Y < 540 and 290 or 390) or L.panelHeight)
     panelTitle.TextSize = L.compact and 22 or 28
 end
 
 local chapterCard = UI.frame(gui, { Size = UDim2.fromScale(1, 1), BackgroundColor3 = C.ink, BackgroundTransparency = 0.1, Visible = false, ZIndex = 35 })
+local chapterScale = UI.make("UIScale", { Scale = 1 }, chapterCard)
 UI.text(chapterCard, "ROZDZIAŁ", { Position = UDim2.fromScale(0.1, 0.28), Size = UDim2.fromScale(0.8, 0.06), TextColor3 = C.amber, TextSize = 14, ZIndex = 36 })
-local chapterTitle = UI.text(chapterCard, "", { Position = UDim2.fromScale(0.1, 0.38), Size = UDim2.fromScale(0.8, 0.25), TextSize = 48, Font = Enum.Font.Oswald, ZIndex = 36 })
+local chapterTitle = UI.text(chapterCard, "", { Position = UDim2.fromScale(0.1, 0.38), Size = UDim2.fromScale(0.8, 0.25), TextSize = 48, Font = Enum.Font.Bodoni, ZIndex = 36 })
 local chapterSub = UI.text(chapterCard, "", { Position = UDim2.fromScale(0.1, 0.69), Size = UDim2.fromScale(0.8, 0.15), TextSize = 18, TextColor3 = C.muted, ZIndex = 36 })
 local chapterGeneration = 0
 showChapter = function(index)
@@ -299,6 +309,7 @@ local function puzzle(data)
     local page, revealed, ready, sending = 1, false, false, false
     local render
     local function mark(button, selected)
+        button:SetAttribute("Selected", selected)
         button.BackgroundColor3 = selected and C.selected or C.panel
         button.TextColor3 = selected and C.paper or C.muted
         local border = button:FindFirstChildOfClass("UIStroke")
@@ -370,7 +381,7 @@ local function puzzle(data)
                     for _, card in ipairs(definition.cards) do if card.id == id then table.insert(names, card.text) end end
                 end
                 for index, name in ipairs(names) do
-                    paragraph(string.format("%02d     %s", index, name), { TextSize = 27, Font = Enum.Font.Oswald, LayoutOrder = index + 2 })
+                    paragraph(string.format("%02d     %s", index, name), { TextSize = 27, Font = Enum.Font.GothamMedium, LayoutOrder = index + 2 })
                 end
                 feedback()
                 submitButton = action(ready and "Przejdź do wyboru imion  →" or "Przyjrzyj się spokojnie liście…", function()
@@ -419,6 +430,7 @@ showEnding = function()
         closePanel()
         menuOpen = true
         menu.Visible = true
+        front:showBackground(true)
         hud.Visible = false
         freeze()
     end)
@@ -461,15 +473,17 @@ end
 renderState = function()
     overlay.Visible = panelOpen
     menu.Visible = menuOpen and front.accepted
+    front:showBackground(menuOpen or not front.accepted)
     front:setReady(state ~= nil, nil)
     freeze()
     if state then
         local chapter = Campaign.chapters[state.chapter]
-        front.caption.Text = string.format("%02d / %s", state.chapter, string.upper(chapter.title))
+        front.caption.Text = string.format("%02d / %s", state.chapter, chapter.title)
+        front.progress.Size = UDim2.fromScale(state.done / state.total, 1)
         chapterLabel.Text = string.format("%02d / %s · %s", state.chapter, chapter.title, chapter.time)
         questText.Text = state.completed and "Historia ukończona. Zajrzyj do zeszytu." or chapter.objectives[state.step].title
         UI.tween(progressFill, { Size = UDim2.fromScale(state.done / state.total, 1) }, 0.4)
-        startButton.Text = state.completed and "Zobacz epilog" or (state.done > 0 or hasStarted) and "Wróć do opowieści →" or "Otwórz pierwszy rozdział →"
+        startButton.Text = state.completed and "Zobacz epilog  →" or (state.done > 0 or hasStarted) and "Kontynuuj historię  →" or "Rozpocznij historię  →"
         resetButton.Visible = state.done > 0 or hasStarted
         UI.tween(Lighting, { ClockTime = chapter.clock }, 2)
     end
@@ -489,7 +503,7 @@ renderState = function()
         panelHeading("TWÓRCY", "Autorzy projektu")
         for _, credit in ipairs(Config.Credits) do
             paragraph(credit.role, { TextSize = 11, Font = Enum.Font.Code, TextColor3 = C.amber })
-            paragraph(credit.name, { TextSize = 26, Font = Enum.Font.Oswald })
+            paragraph(credit.name, { TextSize = 26, Font = Enum.Font.GothamMedium })
         end
         paragraph("Opracowanie dokumentalne", { TextSize = 17 })
         paragraph("Policja, Prokuratura Okręgowa w Ostrołęce, Ministerstwo Edukacji Narodowej. Uzupełniające relacje: Polsat News i RMF24.", { TextSize = 14, TextColor3 = C.muted })
@@ -499,7 +513,7 @@ renderState = function()
         for index, chapter in ipairs(Campaign.chapters) do
             local status = not state and "NIE ROZPOCZĘTO" or state.completed and "UKOŃCZONY" or index < state.chapter and "UKOŃCZONY" or index == state.chapter and "BIEŻĄCY" or "PRZED TOBĄ"
             paragraph(string.format("%02d    %s    /    %s", index, chapter.time, status), { TextSize = 11, Font = Enum.Font.Code, TextColor3 = index == (state and state.chapter) and C.amber or C.muted })
-            paragraph(chapter.title, { TextSize = 23, Font = Enum.Font.Oswald })
+            paragraph(chapter.title, { TextSize = 23, Font = Enum.Font.GothamMedium })
             paragraph(chapter.subtitle, { TextSize = 14, TextColor3 = C.muted })
         end
     elseif mode == "about" then
@@ -546,6 +560,7 @@ local function openMenu()
     if panelOpen then closePanel() end
     menuOpen = not menuOpen
     menu.Visible = menuOpen
+    front:showBackground(menuOpen or not front.accepted)
     hud.Visible = not menuOpen and hasStarted
     if not menuOpen then camera.CameraType = Enum.CameraType.Custom end
     freeze()
@@ -622,12 +637,20 @@ end)
 
 local function resize()
     local size = viewport()
-    local compact = size.X < 760
+    local L = Presentation.layout(size.X, size.Y)
+    local compact = L.compact
     local inset = GuiService:GetGuiInset()
     front:resize(size.X, size.Y, inset.Y)
-    top.Position = UDim2.fromOffset(0, inset.Y)
-    questPanel.Position = UDim2.fromOffset(22, 94 + inset.Y)
-    menuButton.Position = UDim2.new(1, -102, 0, 85 + inset.Y)
+    art:resize(size.X, size.Y)
+    local scale = L.gameScale
+    hudScale.Scale, chapterScale.Scale = scale, scale
+    hud.Size, chapterCard.Size = UDim2.fromOffset(size.X / scale, size.Y / scale), UDim2.fromOffset(size.X / scale, size.Y / scale)
+    interactionScale.Scale, toastScale.Scale = scale, scale
+    interactionHint.Position = UDim2.new(0.5, 0, 1, -58 * scale)
+    toast.Position = UDim2.new(0.5, 0, 1, -52 * scale)
+    top.Position = UDim2.fromOffset(0, inset.Y / scale)
+    questPanel.Position = UDim2.fromOffset(22, 94 + inset.Y / scale)
+    menuButton.Position = UDim2.new(1, -102, 0, 85 + inset.Y / scale)
     layoutPanel()
     questPanel.Size = UDim2.fromOffset(compact and math.min(290, size.X - 130) or 328, compact and 140 or 123)
     questText.Size = UDim2.new(1, -32, 0, compact and 70 or 50)
@@ -636,7 +659,7 @@ local function resize()
     hint.Visible = not UserInputService.TouchEnabled and size.Y > 480
     chapterLabel.Size = compact and UDim2.new(1, -180, 0, 28) or UDim2.new(0.6, -22, 0, 22)
     chapterLabel.TextSize = compact and 11 or 14
-    toast.Size = UDim2.fromOffset(math.min(560, size.X - 32), 86)
+    toast.Size = UDim2.fromOffset(math.min(560, size.X / scale - 32), 86)
 end
 camera:GetPropertyChangedSignal("ViewportSize"):Connect(resize)
 gui:GetPropertyChangedSignal("AbsoluteSize"):Connect(resize)
